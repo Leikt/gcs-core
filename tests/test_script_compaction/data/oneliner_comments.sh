@@ -1,0 +1,1 @@
+echo "Hello, World";if [[ X ]];then ( cat X;echo "$truc";);fi;

@@ -1,0 +1,102 @@
+{
+    "name": "stop_sbx",
+    "description": "Stop the SBX servers in the right order.",
+    "type": "ordered",
+    "nodes": [
+        {
+            "name": "send_start_mail",
+            "description": "Notifies everyone that an operation is going on.",
+            "type": "stepfunction",
+            "stepfunction": "sf-message-ses",
+            "payload": {
+                "template": "stop/beginning.html",
+                "context": {
+                    "client": "ME",
+                    "environment": "sbx"
+                },
+                "extra_context": {
+                    "targets": [
+                        {
+                            "name": "vm01"
+                        },
+                        {
+                            "name": "vm02"
+                        },
+                        {
+                            "name": "vm03"
+                        }
+                    ]
+                },
+                "to": [
+                    "me@me.com"
+                ],
+                "from": "no-reply@me.com"
+            }
+        },
+        {
+            "name": "stop_systems",
+            "description": "All SBX system can be stopped in parallel",
+            "type": "async",
+            "nodes": [
+                {
+                    "name": "stop_vm01",
+                    "description": "Run the stop script on vm01",
+                    "type": "shell",
+                    "language": "shell",
+                    "commands": [
+                        "echo \"Stopping VM01\""
+                    ],
+                    "targets": [
+                        {
+                            "name": "vm01"
+                        }
+                    ]
+                },
+                {
+                    "name": "stop_vm02",
+                    "description": "Run the stop script on vm02",
+                    "type": "shell",
+                    "language": "shell",
+                    "commands": [
+                        "echo \"Stopping VM02\""
+                    ],
+                    "targets": [
+                        {
+                            "name": "vm02"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "send_end_mail",
+            "description": "Notifies everyone that the operation is finished.",
+            "type": "stepfunction",
+            "stepfunction": "sf-message-ses",
+            "payload": {
+                "template": "stop/end.html",
+                "context": {
+                    "client": "ME",
+                    "environment": "sbx"
+                },
+                "extra_context": {
+                    "targets": [
+                        {
+                            "name": "vm01"
+                        },
+                        {
+                            "name": "vm02"
+                        },
+                        {
+                            "name": "vm03"
+                        }
+                    ]
+                },
+                "to": [
+                    "me@me.com"
+                ],
+                "from": "no-reply@me.com"
+            }
+        }
+    ]
+}

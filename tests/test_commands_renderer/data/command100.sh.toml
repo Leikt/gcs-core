@@ -1,0 +1,7 @@
+description = """
+Greets someone.
+"""
+
+[[argument]]
+name="name"
+help="Name of the person to greet"

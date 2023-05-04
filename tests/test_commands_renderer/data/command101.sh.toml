@@ -1,0 +1,8 @@
+[[argument]]
+name = "services"
+nargs = "+"
+
+[[argument]]
+names = ["-a", "--do-a"]
+action = "store_true"
+default = false
