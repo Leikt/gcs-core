@@ -63,3 +63,4 @@ class Visitor:
             raise ValueError(f'Missing concrete visitor method "{visitor_method}" in {self.__class__.__name__}')
 
         self.methods[visitor_method](self, obj, context)
+

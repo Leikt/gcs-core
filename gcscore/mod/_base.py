@@ -6,8 +6,6 @@ from __future__ import annotations
 import re
 from typing import TypeVar, Type
 
-from .validators import Undefined, validate_type, validate_required, validate_string_pattern
-
 T = TypeVar('T')
 
 __all__ = ['BaseNode', 'add_child', 'HasName', 'HasDescription', 'HasChildren', 'AcceptAnonymousChild', 'AcceptMerge']
@@ -24,31 +22,20 @@ class BaseNode:
             if hasattr(cls, '__gcs__init__'):
                 cls.__gcs__init__(self, **kwargs)
 
-    def validate(self, header: str):
-        for cls in self.__class__.__mro__:
-            if hasattr(cls, 'validate'):
-                cls.validate(self, header)
 
-
-PATTERN_NAME = re.compile(r'[a-zA-Z0-9_\-.]+')
+PATTERN_NAME = re.compile(r'^[a-zA-Z0-9_\-.]+$')
 
 
 class HasName:
     """
     Provide the node with a name. This is also the base trait to use for all the nodes.
     """
-    gcscore_name: str = Undefined
+    gcscore_name: str
 
     def __gcs__init__(self, **kwargs):
         if 'name' not in kwargs:
             raise AttributeError('Missing required argument "name"')
         self.gcscore_name = kwargs['name']
-
-    def validate(self, header: str):
-        header += f'.{self.__class__.__name__}'
-        validate_required(header, self.gcscore_name)
-        validate_type(header, self.gcscore_name, [str])
-        validate_string_pattern(header, self.gcscore_name, PATTERN_NAME)
 
 
 class HasChildren:
@@ -59,12 +46,6 @@ class HasChildren:
 
     def __gcs__init__(self, **_):
         self.gcscore_children = []
-
-    def validate(self, header: str):
-        header += f'.{self.__class__.__name__}'
-        for child in self.gcscore_children:
-            if hasattr(child, 'validate'):
-                child.validate(header)
 
 
 class HasDescription:
@@ -78,10 +59,6 @@ class HasDescription:
         """
         self.gcscore_description = text
         return self
-
-    def validate(self, header: str):
-        header += f'.{self.__class__.__name__}'
-        validate_type(header, self.gcscore_description, [str])
 
 
 class AcceptMerge:
@@ -111,7 +88,6 @@ def add_child(parent: HasChildren, klass: Type[T], **kwargs) -> T:
     Create and add a child to the given parent node.
     :param parent: the parent node
     :param klass: the class of the child node
-    :param name: name of the child node
     :return: the child node
     """
     child = klass(**kwargs)
