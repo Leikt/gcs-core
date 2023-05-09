@@ -12,6 +12,7 @@ class VisitorStateValidation:
     """
     traceback: list[str] = field(default_factory=list)
     only_log_errors: bool = False
+    others: dict[str, Any] = field(default_factory=dict)
 
     def concat(self, *trace: str):
         """
