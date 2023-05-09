@@ -22,7 +22,8 @@ class VisitorStateValidation:
         """
         return VisitorStateValidation(
             traceback=self.traceback + list(trace),
-            only_log_errors=self.only_log_errors
+            only_log_errors=self.only_log_errors,
+            others=self.others
         )
 
     def formatted_traceback(self) -> str:
